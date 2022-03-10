@@ -25,12 +25,17 @@ router.get('/:id', (req, res) => {
     // be sure to include its associated Products
     include: [{ model: Product }]   
   })
-    .then(dbCategoryData => res.json(dbCategoryData))
-    .catch(err => {
+    .then(dbCategoryData => {
+      if (!dbCategoryData) {
+        res.status(404).json({ message: 'No category found with this id!'})
+        return;
+      }
+      res.json(dbCategoryData);
+    }) 
+    .catch((err) => {
       console.log(err);
-      res.status(500).json(err);
+      res.status(400).json(err);
     });
-
 });
 
 router.post('/', (req, res) => {
@@ -38,11 +43,11 @@ router.post('/', (req, res) => {
   Category.create({
     category_name: req.body.category_name
   })
-  .then(dbCategoryData => res.json(dbCategoryData))
-  .catch(err => {
-    console.log(err);
-    res.status(500).json(err);
-  });
+    .then(dbCategoryData => res.json(dbCategoryData))
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
 
 router.put('/:id', (req, res) => {
